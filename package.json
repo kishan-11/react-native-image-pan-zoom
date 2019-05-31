@@ -1,0 +1,31 @@
+{
+  "name": "@housing/react-native-image-pan-zoom",
+  "version": "1.0.0",
+  "description": "react native image pan zoom",
+  "main": "built/index.js",
+  "types": "built/index.d.ts",
+  "scripts": {
+    "prepare": "rm -rf built && tsc",
+    "start": "tsc -w --outDir demo/built"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/housinghq/react-native-image-pan-zoom.git"
+  },
+  "keywords": [
+    "image-zoom"
+  ],
+  "author": "Kishan Patel",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-native": "*",
+    "react": "*",
+    "react-native": "*",
+    "typescript": "2.9.2"
+  }
+}
