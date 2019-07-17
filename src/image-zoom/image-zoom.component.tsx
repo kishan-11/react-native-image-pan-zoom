@@ -4,8 +4,6 @@ import {
   LayoutChangeEvent,
   PanResponder,
   PanResponderInstance,
-  Platform,
-  PlatformOSType,
   StyleSheet,
   View
 } from 'react-native';
@@ -35,9 +33,6 @@ export default class ImageViewer extends React.Component<Props, State> {
   // 图片手势处理
   private imagePanResponder: PanResponderInstance | null = null;
 
-  // 上次手按下去的时间
-  private lastTouchStartTime: number = 0;
-
   // 滑动过程中，整体横向过界偏移量
   private horizontalWholeOuterCounter = 0;
 
@@ -55,9 +50,6 @@ export default class ImageViewer extends React.Component<Props, State> {
   // 触发单击的 timeout
   private singleClickTimeout: any;
 
-  // 计算长按的 timeout
-  private longPressTimeout: any;
-
   // 上一次点击的时间
   private lastClickTime = 0;
 
@@ -67,9 +59,6 @@ export default class ImageViewer extends React.Component<Props, State> {
 
   // 是否双击了
   private isDoubleClick = false;
-
-  // 是否是长按
-  private isLongPress = false;
 
   // 是否在左右滑
   private isHorizontalWrap = false;
@@ -87,9 +76,7 @@ export default class ImageViewer extends React.Component<Props, State> {
         this.zoomLastDistance = null;
         this.horizontalWholeCounter = 0;
         this.verticalWholeCounter = 0;
-        this.lastTouchStartTime = new Date().getTime();
         this.isDoubleClick = false;
-        this.isLongPress = false;
         this.isHorizontalWrap = false;
 
         // 任何手势开始，都清空单击计时器
@@ -105,17 +92,6 @@ export default class ImageViewer extends React.Component<Props, State> {
           this.centerDiffY = centerY - this.props.cropHeight / 2;
         }
 
-        // 计算长按
-        if (this.longPressTimeout) {
-          clearTimeout(this.longPressTimeout);
-        }
-        this.longPressTimeout = setTimeout(() => {
-          this.isLongPress = true;
-          if (this.props.onLongPress) {
-            this.props.onLongPress();
-          }
-        }, this.props.longPressTime);
-
         if (evt.nativeEvent.changedTouches.length <= 1) {
           // 一个手指的情况
           if (new Date().getTime() - this.lastClickTime < (this.props.doubleClickInterval || 0)) {
@@ -126,7 +102,6 @@ export default class ImageViewer extends React.Component<Props, State> {
             }
 
             // 取消长按
-            clearTimeout(this.longPressTimeout);
 
             // 因为可能触发放大，因此记录双击时的坐标位置
             this.doubleClickX = evt.nativeEvent.changedTouches[0].pageX;
@@ -206,12 +181,6 @@ export default class ImageViewer extends React.Component<Props, State> {
 
           this.horizontalWholeCounter += diffX;
           this.verticalWholeCounter += diffY;
-
-          if (Math.abs(this.horizontalWholeCounter) > 5 || Math.abs(this.verticalWholeCounter) > 5) {
-            // 如果位移超出手指范围，取消长按监听
-            clearTimeout(this.longPressTimeout);
-          }
-
           if (this.props.panToMove) {
             // 处理左右滑，如果正在 swipeDown，左右滑失效
             if (this.swipeDownOffset === 0) {
@@ -353,9 +322,6 @@ export default class ImageViewer extends React.Component<Props, State> {
         } else {
           // 多个手指的情况
           // 取消长按状态
-          if (this.longPressTimeout) {
-            clearTimeout(this.longPressTimeout);
-          }
 
           if (this.props.pinchToZoom) {
             // 找最小的 x 和最大的 x
@@ -420,17 +386,9 @@ export default class ImageViewer extends React.Component<Props, State> {
       },
       onPanResponderRelease: (evt, gestureState) => {
         // 取消长按
-        if (this.longPressTimeout) {
-          clearTimeout(this.longPressTimeout);
-        }
 
         // 双击结束，结束尾判断
         if (this.isDoubleClick) {
-          return;
-        }
-
-        // 长按结束，结束尾判断
-        if (this.isLongPress) {
           return;
         }
 

@@ -69,11 +69,6 @@ export class Props {
   public maxOverflow?: number = 100;
 
   /**
-   * 长按的阈值（毫秒）
-   */
-  public longPressTime?: number = 800;
-
-  /**
    * 双击计时器最大间隔
    */
   public doubleClickInterval?: number = 175;
@@ -128,10 +123,6 @@ export class Props {
   /**
    * 长按的回调
    */
-  public onLongPress?: () => void = () => {
-    //
-  };
-
   public handlePanSwipeDown?: (Y?: number) => void = () => {
     //
   }
